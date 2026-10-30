@@ -110,7 +110,9 @@ returns text language plpgsql volatile as $$
 declare candidate text;
 begin
   loop
-    candidate := 'STU-' || upper(substr(encode(gen_random_bytes(4), 'hex'), 1, 8));
+    -- Use PostgreSQL's built-in UUID generator; this avoids depending on pgcrypto
+    -- being installed in a particular schema.
+    candidate := 'STU-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8));
     exit when not exists (select 1 from public.profiles where student_code = candidate);
   end loop;
   return candidate;
@@ -371,7 +373,9 @@ as $$
 declare candidate text;
 begin
   loop
-    candidate := 'STU-' || upper(substr(encode(gen_random_bytes(4), 'hex'), 1, 8));
+    -- Use PostgreSQL's built-in UUID generator; this avoids depending on pgcrypto
+    -- being installed in a particular schema.
+    candidate := 'STU-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8));
     exit when not exists (
       select 1 from public.profiles where student_code = candidate
     );
